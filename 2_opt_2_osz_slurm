@@ -1,0 +1,23 @@
+#!/bin/sh
+#SBATCH -J ht
+#SBATCH -o job-%j.log
+#SBATCH -e job-%j.err
+#SBATCH -N 1 -n 48
+#SBATCH -p normal
+echo Time is `date`
+echo Directory is $PWD
+echo This job runs on the following nodes:
+echo $SLURM_JOB_NODELIST
+echo This job has allocated $SLURM_JOB_CPUS_PER_NODE cpu cores.
+module add vasp/5.4.4-intel2019
+
+#cordlist=('cord1' 'cord2' 'cord3' 'cord4' 'cord5')
+#cordlist=('cord1')
+for rows in `cat osz_formula.txt`
+do
+cd $rows
+mpirun vasp_std_2D > runlog
+cd ../../..
+done
+
+

@@ -1,0 +1,27 @@
+#!/bin/sh
+#SBATCH -J ht
+#SBATCH -o job-%j.log
+#SBATCH -e job-%j.err
+#SBATCH -N 1 -n 48
+#SBATCH -p long
+echo Time is `date`
+echo Directory is $PWD
+echo This job runs on the following nodes:
+echo $SLURM_JOB_NODELIST
+echo This job has allocated $SLURM_JOB_CPUS_PER_NODE cpu cores.
+module add vasp/5.4.4-intel2019
+
+for rows in `cat select_list_soc_d.txt`
+do
+cd $rows
+cd scf_soc
+mpirun vasp_ncl_2D > runlog
+
+cd ../hse_soc
+cp ../scf_soc/CHG* ./
+cp ../scf_soc/WAVECAR ./
+mpirun vasp_ncl_2D > runlog
+cd ..
+
+cd ../../..
+done
